@@ -2,14 +2,18 @@ package com.product.model;
 
 import com.fasterxml.jackson.annotation.JsonAlias;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.product.client.CommentDto;
+import com.product.service.ProductService;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.smallrye.common.constraint.NotNull;
 import jakarta.validation.constraints.NotBlank;
 import org.bson.codecs.pojo.annotations.BsonProperty;
 
+import java.beans.Transient;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @MongoEntity(collection = "product")
 public class ProductEntity extends PanacheMongoEntity {
@@ -23,9 +27,18 @@ public class ProductEntity extends PanacheMongoEntity {
     private String category;
     private String imageUrl;
     private String skuProduct;
+
     private LocalDateTime localDateTime;
     private int year;
-    //private List<Comment> commentList;
+    public List<CommentDto> commentList;
+
+    public List<CommentDto> getCommentList() {
+        return commentList;
+    }
+
+    public void setCommentList(List<CommentDto> commentList) {
+        this.commentList = commentList;
+    }
 
     public String getNameProduct() {
         return nameProduct;

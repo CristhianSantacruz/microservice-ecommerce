@@ -1,13 +1,17 @@
 package com.product.service;
 
+import com.product.client.CommentClient;
 import com.product.dto.ProductDto;
 import com.product.model.ProductEntity;
 import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
@@ -15,9 +19,20 @@ import java.util.Random;
 @ApplicationScoped
 public class ProductService implements IProductService {
 
+    @Inject
+    @RestClient
+    CommentClient commentClient;
+
     @Override
     public Optional<ProductEntity> getProductById(ObjectId objectId) {
-        return ProductEntity.findByIdOptional(objectId);
+       Optional<ProductEntity> productEntity =  ProductEntity.findByIdOptional(objectId);
+       if(productEntity.isPresent()) {
+           ProductEntity product = productEntity.get();
+           product.setCommentList(commentClient.getAllCommentsByIdProduct(product.id));
+           product.update();
+           return Optional.of(product);
+       }
+        return Optional.empty();
     }
 
     @Override
@@ -85,6 +100,7 @@ public class ProductService implements IProductService {
         product.setLocalDateTime(dateCreation);
         product.setYear(dateCreation.getYear());
         product.setSkuProduct(generateSkuProduct(product.getNameProduct(),product.getCategory()));
+        product.setCommentList(new ArrayList<>());
         //save
         product.persist();
         return product;

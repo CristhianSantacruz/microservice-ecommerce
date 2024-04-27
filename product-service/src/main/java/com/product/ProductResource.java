@@ -1,5 +1,6 @@
 package com.product;
 
+import com.product.client.CommentClient;
 import com.product.dto.ProductDto;
 import com.product.model.ProductEntity;
 import com.product.service.IProductService;
@@ -11,6 +12,7 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.Optional;
 
@@ -22,12 +24,23 @@ public class ProductResource {
     @Inject
     IProductService iProductService;
 
+    @Inject
+    @RestClient
+    CommentClient commentClient;
+
     @GET
     @Path("/hello")
     @Produces(MediaType.TEXT_PLAIN)
-    public  String hello() {
-        return "Hello Product Service";
+    public Response hello() {
+        return Response.ok("Hello Product Service").build();
     }
+
+    @GET
+    @Path("/comments")
+    public Response comments(){
+        return Response.ok(this.commentClient.getAllComments()).build();
+    }
+
     //save product
     @POST
     @Path("/save")
@@ -36,7 +49,9 @@ public class ProductResource {
     }
     @GET
     @Path("/all")
-    public Response getAllProducts(){return Response.ok(iProductService.getAllProducts()).build();}
+    public Response getAllProducts(){
+        return Response.ok(iProductService.getAllProducts()).build();
+    }
     @GET
     @Path("/all-ascending-year")
     public Response getAllProductsAscendingYear(){return Response.ok(iProductService.getAllProductsAscendingByYear()).build();}
