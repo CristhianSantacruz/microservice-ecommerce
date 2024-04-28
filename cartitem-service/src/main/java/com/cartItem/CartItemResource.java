@@ -33,6 +33,12 @@ public class CartItemResource {
 
     }
     @GET
+    @Path("/idCart/{idCart}")
+    public Response getAllByIdCart(@PathParam("idCart") ObjectId idCart){
+        return Response.ok(iCartItemService.getAllByIdCart(idCart)).build();
+    }
+
+    @GET
     @Path("/id/{id}")
     public Response getCartItemById(@PathParam("id") ObjectId id){
         Optional<CartItemEntity> optionalCartItem = iCartItemService.getCartItemById(id);
@@ -43,7 +49,7 @@ public class CartItemResource {
     }
 
     @PUT
-    @Path("/update-vote/{id}")
+    @Path("/update-quantity/{id}")
     public Response updateVote(@PathParam("id") ObjectId id){
         return iCartItemService.updateQuantityCartItem(id) ? Response.ok().build()
                 : Response.status(404).build();

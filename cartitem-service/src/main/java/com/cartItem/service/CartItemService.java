@@ -11,6 +11,7 @@ import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -31,6 +32,11 @@ public class CartItemService implements ICartItemService{
         cartItemEntity.setSubTotal(cartItemEntity.calculateSubTotal());
         cartItemEntity.persist();
         return cartItemEntity;
+    }
+
+    @Override
+    public List<CartItemEntity> getAllByIdCart(ObjectId cartId) {
+        return CartItemEntity.list("idCart",cartId);
     }
 
     @Override

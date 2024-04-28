@@ -20,9 +20,10 @@ public class CommentResource {
     ICommentService iCommentService;
 
     @GET
+    @Path("/hello")
     @Produces(MediaType.TEXT_PLAIN)
-    public String hello() {
-        return "Hello from Quarkus REST";
+    public Response hello() {
+        return Response.ok("Hello from Quarkus REST").build();
     }
 
     @POST

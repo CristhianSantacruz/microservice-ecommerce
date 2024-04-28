@@ -1,41 +1,30 @@
-package com.cartItem.model;
+package com.cart.dtos;
 
-import com.cartItem.dtos.ProductDto;
-import io.quarkus.mongodb.panache.PanacheMongoEntity;
-import io.quarkus.mongodb.panache.common.MongoEntity;
 import org.bson.types.ObjectId;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
-@MongoEntity(collection = "cartItem")
-public class CartItemEntity extends PanacheMongoEntity {
-    private ObjectId idCart;
+public class CartItemDtoResponse {
+
+    private ObjectId id;
     private ProductDto productDto;
     private int quantity;
     private double priceProduct;
     private BigDecimal subTotal;
+
+    public ObjectId getId() {
+        return id;
+    }
+
+    public void setId(ObjectId id) {
+        this.id = id;
+    }
+
     private LocalDateTime addedDate;
-
-    public ObjectId getIdCart() {
-        return idCart;
-    }
-
-    public void setIdCart(ObjectId idCart) {
-        this.idCart = idCart;
-    }
 
     public ProductDto getProductDto() {
         return productDto;
-    }
-
-    public BigDecimal calculateSubTotal() {
-
-        BigDecimal priceBigDecimal = BigDecimal.valueOf(this.priceProduct);
-        BigDecimal quantityBigDecimal = BigDecimal.valueOf(this.quantity);
-        return priceBigDecimal.multiply(quantityBigDecimal);
-
-
     }
 
     public void setProductDto(ProductDto productDto) {
