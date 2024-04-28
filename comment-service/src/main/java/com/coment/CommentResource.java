@@ -2,6 +2,8 @@ package com.coment;
 
 import com.coment.model.CommentEntity;
 import com.coment.service.ICommentService;
+import jakarta.annotation.security.PermitAll;
+import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.transaction.Transactional;
 import jakarta.ws.rs.*;
@@ -19,6 +21,7 @@ public class CommentResource {
     @Inject
     ICommentService iCommentService;
 
+    @PermitAll
     @GET
     @Path("/hello")
     @Produces(MediaType.TEXT_PLAIN)
@@ -26,23 +29,28 @@ public class CommentResource {
         return Response.ok("Hello from Quarkus REST").build();
     }
 
+    @RolesAllowed({"user","admin"})
     @POST
     @Path("/save")
     public Response saveComment(CommentEntity comment) {
         iCommentService.saveComment(comment);
         return Response.status(201).entity(comment).build();
     }
+
+    @PermitAll
     @GET
     @Path("/all")
     public Response getAllCommentsB() {
         return Response.ok(iCommentService.getAllComments()).build();
     }
-
+    @PermitAll
     @GET
     @Path("/all-by-idProduct/{idProduct}")
     public Response getAllCommentsByIdProduct(@PathParam("idProduct") String idProduct) {
         return Response.ok(iCommentService.getAllCommentByIdProduct(idProduct)).build();
     }
+
+    @RolesAllowed({"user","admin"})
     @PUT
     @Path("/update/{idComment}")
     public Response updateComment(@PathParam("idComment") ObjectId idComment,CommentEntity commentEntity) {
@@ -50,6 +58,8 @@ public class CommentResource {
         return comment.isPresent() ? Response.ok(comment.get()).build()
                 : Response.status(404).build();
     }
+
+    @RolesAllowed({"user","admin"})
     @PUT
     @Path("/update/{idComment}/calification/{calification}")
     public  Response updateCalification(@PathParam("idComment") ObjectId idComment,@PathParam("calification") int calification){
@@ -57,6 +67,7 @@ public class CommentResource {
                 : Response.status(404).build();
     }
 
+    @RolesAllowed({"user","admin"})
     @PUT
     @Path("/vote/{idComment}")
     public  Response updateVote(@PathParam("idComment") ObjectId idComment){
@@ -64,6 +75,7 @@ public class CommentResource {
                 : Response.status(404).build();
     }
 
+    @RolesAllowed({"user","admin"})
     @DELETE
     @Path("/delete/{idComment}")
     public Response deleteComment(@PathParam("idComment") ObjectId idComment) {
@@ -71,6 +83,7 @@ public class CommentResource {
                 Response.ok().build() : Response.status(404).build();
     }
 
+    @RolesAllowed("admin")
     @DELETE
     @Path("/delete/all")
     public void deleteAllComments() {
