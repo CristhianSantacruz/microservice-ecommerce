@@ -49,6 +49,9 @@ public class CommentService  implements ICommentService {
         if(optionalComment.isPresent()){
             CommentEntity commentEntity = optionalComment.get();
             commentEntity.setContent(comment.getContent());
+            commentEntity.setCalification(comment.getCalification());
+            commentEntity.setVote(comment.getVote());
+            commentEntity.setCommentType(comment.getCommentType());
             commentEntity.update();
             return Optional.of(commentEntity);
         }

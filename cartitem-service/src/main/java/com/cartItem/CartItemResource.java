@@ -10,6 +10,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import java.util.Optional;
 
@@ -27,15 +29,29 @@ public class CartItemResource {
         return "Hello from Quarkus REST";
     }
 
+    @RolesAllowed({"admin"})
+    @GET
+    @Path("/all")
+    public Response getAll() {
+        return Response.ok(CartItemEntity.listAll()).build();
+    }
+
 
     @POST
     @Path("/save")
+    @Timeout(value = 3000L)
+    @Fallback(fallbackMethod = "getFallBackProductById")
     @RolesAllowed("user")
     public Response saveCartItem(CarItemDto carItemDto){
         return Response.status(201)
                 .entity(iCartItemService.savecartItem(carItemDto)).build();
 
     }
+
+    public Response getFallBackProductById(CarItemDto carItemDto) {
+        return Response.ok("Lo sentimos el servicio product esta fallando").build();
+    }
+
     @GET
     @RolesAllowed("user")
     @Path("/idCart/{idCart}")
@@ -54,7 +70,7 @@ public class CartItemResource {
                 : Response.status(404).build();
     }
 
-    @PUT
+    @PATCH
     @RolesAllowed({"user"})
     @Path("/update-quantity/{id}")
     public Response updateVote(@PathParam("id") ObjectId id){

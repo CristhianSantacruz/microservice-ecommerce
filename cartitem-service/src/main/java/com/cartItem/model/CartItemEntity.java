@@ -10,20 +10,12 @@ import java.time.LocalDateTime;
 
 @MongoEntity(collection = "cartItem")
 public class CartItemEntity extends PanacheMongoEntity {
-    private ObjectId idCart;
     private ProductDto productDto;
     private int quantity;
     private double priceProduct;
     private BigDecimal subTotal;
     private LocalDateTime addedDate;
 
-    public ObjectId getIdCart() {
-        return idCart;
-    }
-
-    public void setIdCart(ObjectId idCart) {
-        this.idCart = idCart;
-    }
 
     public ProductDto getProductDto() {
         return productDto;

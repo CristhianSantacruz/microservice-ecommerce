@@ -60,7 +60,7 @@ public class CommentResource {
     }
 
     @RolesAllowed({"user","admin"})
-    @PUT
+    @PATCH
     @Path("/update/{idComment}/calification/{calification}")
     public  Response updateCalification(@PathParam("idComment") ObjectId idComment,@PathParam("calification") int calification){
         return iCommentService.updateCalification(idComment,calification) ? Response.ok().build()
@@ -68,7 +68,7 @@ public class CommentResource {
     }
 
     @RolesAllowed({"user","admin"})
-    @PUT
+    @PATCH
     @Path("/vote/{idComment}")
     public  Response updateVote(@PathParam("idComment") ObjectId idComment){
         return iCommentService.voteComment(idComment) ? Response.ok().build()
