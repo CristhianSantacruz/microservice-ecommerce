@@ -4,6 +4,7 @@ import com.product.client.CommentClient;
 import com.product.dto.ProductDto;
 import com.product.model.ProductEntity;
 import com.product.service.IProductService;
+import io.vertx.ext.web.handler.HttpException;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -14,14 +15,20 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Retry;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.Optional;
+import java.util.logging.Logger;
 
 @Path("/product")
 @Transactional
 @Singleton
 public class ProductResource {
+
+    Logger LOGGER = Logger.getLogger(ProductResource.class.getName());
 
     @Inject
     IProductService iProductService;
@@ -49,14 +56,30 @@ public class ProductResource {
     @POST
     @Path("/save")
     public Response saveProduct(@Valid ProductEntity productEntity){
+        this.LOGGER.info("ENDPOINT SAVE PRODUCT");
         return Response.status(201).entity(iProductService.saveProduct(productEntity)).build();
     }
+
+    public Response saveFallBack() {
+        return Response.ok("Hubo un problema al guardar el producto").build();
+    }
+
+
     @GET
     @PermitAll
     @Path("/all")
+    @Timeout(value = 3000L)
+    @Retry(maxRetries = 2)
+    @Fallback(fallbackMethod = "getAllFallBack")
     public Response getAllProducts(){
+        this.LOGGER.info("ENDPOINT ALL PRODUCTS");
         return Response.ok(iProductService.getAllProducts()).build();
     }
+
+    public Response getAllFallBack(){
+        return Response.ok("Hubo un problema en mostrar los productos").build();
+    }
+
     @PermitAll
     @GET
     @Path("/all-ascending-year")
@@ -108,8 +131,11 @@ public class ProductResource {
 
     @PermitAll
     @GET
+    @Timeout(value = 2000L)
+    @Retry
     @Path("/id/{id}")
     public  Response getProductById(@PathParam("id")ObjectId id){
+        LOGGER.info("GET PRODUCT BY ID");
         Optional<ProductEntity> pro0 = iProductService.getProductById(id);
         return pro0.isPresent() ? Response.ok(pro0.get()).build() : Response.status(Response.Status.NOT_FOUND).build();
     }
@@ -141,9 +167,11 @@ public class ProductResource {
     @DELETE
     @Path("/delete/{id}")
     public Response deleteProduct(@PathParam("id") ObjectId id){
+        LOGGER.info("ENDPOINT DELETE PRODUCT");
         return iProductService.deleteProductById(id)
                 ? Response.ok().build()
                 : Response.status(Response.Status.NOT_FOUND).build();
     }
+
 
 }

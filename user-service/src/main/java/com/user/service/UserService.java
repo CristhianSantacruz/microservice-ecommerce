@@ -5,9 +5,6 @@ import com.user.utils.PBKDF2Encoder;
 import com.user.utils.RoleUser;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import net.bytebuddy.build.AccessControllerPlugin;
-
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.util.Optional;
 
 @ApplicationScoped
@@ -21,7 +18,7 @@ public class UserService implements  IUserService{
         String password = user.getPassword();
         String passwordHash = pbkdf2Encoder.encode(password);
         user.setPassword(passwordHash);
-        if(user.getRol().toString().isEmpty() || user.getRol() != RoleUser.admin){
+        if(user.getRol()==null || user.getRol() != RoleUser.admin){
             user.setRol(RoleUser.user);
         }
         user.setPassword(passwordHash);

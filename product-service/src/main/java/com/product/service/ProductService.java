@@ -68,8 +68,7 @@ public class ProductService implements IProductService {
 
     @Override
     public List<ProductEntity> getAllProducts() {
-        List<ProductEntity> products = ProductEntity.listAll();
-        return products;
+        return ProductEntity.listAll();
     }
 
     @Override
