@@ -1,13 +1,17 @@
 package com.cart.service;
 
 import com.cart.client.CartItemClient;
+import com.cart.client.UserClient;
 import com.cart.dtos.CartItemDtoRequest;
 import com.cart.dtos.CartItemDtoResponse;
+import com.cart.dtos.UserDtoResponse;
+import com.cart.exception.ProductRequestException;
 import com.cart.model.CartEntity;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.health.Readiness;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.math.BigDecimal;
@@ -23,13 +27,20 @@ public class CartService implements ICartService {
     @RestClient
     CartItemClient cartItemClient;
 
+    @Inject
+    @RestClient
+    UserClient userClient;
+
 
     @Override
-    public CartEntity createCart() {
+    public CartEntity createCart(String emailUser) {
         CartEntity cart = new CartEntity();
+        //guardar el dieno del carro osea el usuario logeado
         cart.setCreatedAt(LocalDateTime.now());
         cart.setCartItemList(new ArrayList<>());
         cart.setTotalPrice(BigDecimal.ZERO);
+        UserDtoResponse userDtoResponse = userClient.getUserByEmail(emailUser);
+        cart.setUserDtoResponse(userDtoResponse);
         cart.persist();
         return cart;
     }
@@ -47,7 +58,11 @@ public class CartService implements ICartService {
             cart.persist();
         }
         // Agrega el nuevo ítem al carrito
-        cart.getCartItemList().add(cartItemClient.save(new CartItemDtoRequest(idProduct)));
+        try {
+            cart.getCartItemList().add(cartItemClient.save(new CartItemDtoRequest(idProduct)));
+        }catch (ProductRequestException exception){
+            System.err.println(exception.getMessage());
+        }
         cart.update();
         return cart;
     }

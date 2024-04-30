@@ -1,6 +1,7 @@
 package com.cart.model;
 
 import com.cart.dtos.CartItemDtoResponse;
+import com.cart.dtos.UserDtoResponse;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 
@@ -12,13 +13,21 @@ import java.util.List;
 @MongoEntity(collection = "carts")
 public class CartEntity extends PanacheMongoEntity {
 
-    //private String username;
+    private UserDtoResponse userDtoResponse;
     private List<CartItemDtoResponse> cartItemList  =  new ArrayList<>();
     private LocalDateTime createdAt;
     private BigDecimal totalPrice;
 
     public List<CartItemDtoResponse> getCartItemList() {
         return cartItemList;
+    }
+
+    public UserDtoResponse getUserDtoResponse() {
+        return userDtoResponse;
+    }
+
+    public void setUserDtoResponse(UserDtoResponse userDtoResponse) {
+        this.userDtoResponse = userDtoResponse;
     }
 
     public void setCartItemList(List<CartItemDtoResponse> cartItemList) {
@@ -40,4 +49,5 @@ public class CartEntity extends PanacheMongoEntity {
     public void setTotalPrice(BigDecimal totalPrice) {
         this.totalPrice = totalPrice;
     }
+
 }

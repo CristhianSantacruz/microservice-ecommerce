@@ -15,7 +15,7 @@ import jakarta.ws.rs.core.Response;
 
 import java.util.Optional;
 
-@Path("/user")
+@Path("/auth")
 @Transactional
 public class AuthenticationResource {
 

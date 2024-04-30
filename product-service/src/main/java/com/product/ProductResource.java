@@ -18,6 +18,7 @@ import org.bson.types.ObjectId;
 import org.eclipse.microprofile.faulttolerance.Fallback;
 import org.eclipse.microprofile.faulttolerance.Retry;
 import org.eclipse.microprofile.faulttolerance.Timeout;
+import org.eclipse.microprofile.faulttolerance.exceptions.TimeoutException;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.util.Optional;
@@ -131,8 +132,6 @@ public class ProductResource {
 
     @PermitAll
     @GET
-    @Timeout(value = 2000L)
-    @Retry
     @Path("/id/{id}")
     public  Response getProductById(@PathParam("id")ObjectId id){
         LOGGER.info("GET PRODUCT BY ID");

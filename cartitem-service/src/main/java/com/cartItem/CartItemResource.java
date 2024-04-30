@@ -41,7 +41,6 @@ public class CartItemResource {
     @Path("/save")
     @Timeout(value = 3000L)
     @Fallback(fallbackMethod = "getFallBackProductById")
-    @RolesAllowed("user")
     public Response saveCartItem(CarItemDto carItemDto){
         return Response.status(201)
                 .entity(iCartItemService.savecartItem(carItemDto)).build();
@@ -60,7 +59,6 @@ public class CartItemResource {
     }
 
     @GET
-    @RolesAllowed({"user","admin"})
     @Path("/id/{id}")
     public Response getCartItemById(@PathParam("id") ObjectId id){
         Optional<CartItemEntity> optionalCartItem = iCartItemService.getCartItemById(id);

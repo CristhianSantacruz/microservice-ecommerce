@@ -17,13 +17,21 @@ public class CommentEntity extends PanacheMongoEntity {
     @NotNull @NotBlank
     private String content;
     private int calification;
-    //private String nameUser;
+    private String emailUser;
     private int vote;
     private CommentType commentType;
     private LocalDateTime createdAt;
 
     public String getIdProduct() {
         return idProduct;
+    }
+
+    public String getNameUser() {
+        return emailUser;
+    }
+
+    public void setNameUser(String nameUser) {
+        this.emailUser = nameUser;
     }
 
     public void setIdProduct(String idProduct) {

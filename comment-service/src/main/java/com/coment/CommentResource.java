@@ -51,6 +51,14 @@ public class CommentResource {
     }
 
     @RolesAllowed({"user","admin"})
+    @GET
+    @Path("/all-by-user/{emailUser}")
+    public Response getAllCommentsByEmailUser(@PathParam("emailUser") String emailUser){
+        return  Response.ok(iCommentService.getAllCommentsByUser(emailUser)).build();
+    }
+
+
+    @RolesAllowed({"user","admin"})
     @PUT
     @Path("/update/{idComment}")
     public Response updateComment(@PathParam("idComment") ObjectId idComment,CommentEntity commentEntity) {

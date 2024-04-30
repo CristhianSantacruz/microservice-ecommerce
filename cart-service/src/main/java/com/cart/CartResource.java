@@ -1,8 +1,10 @@
 package com.cart;
 
+import com.cart.exception.ProductRequestException;
 import com.cart.model.CartEntity;
 import com.cart.service.CartService;
 import com.cart.service.ICartService;
+import io.smallrye.mutiny.TimeoutException;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
@@ -11,6 +13,8 @@ import jakarta.ws.rs.*;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.faulttolerance.Fallback;
+import org.eclipse.microprofile.faulttolerance.Timeout;
 
 import java.io.ObjectInput;
 
@@ -38,16 +42,21 @@ public class CartResource {
 
     @POST
     @RolesAllowed("user")
-    @Path("/create")
-    public Response createCart(){
-        return Response.status(201).entity(iCartService.createCart()).build();
+    @Path("/create/{emailUser}")
+    public Response createCart(@PathParam("emailUser") String emailUser){
+        return Response.status(201).entity(iCartService.createCart(emailUser)).build();
     }
 
     @POST
     @RolesAllowed("user")
     @Path("/add/{idProduct}/cart/{idCart}")
+    @Fallback(fallbackMethod = "fallBackAddMethod")
     public Response addItem(@PathParam("idProduct") ObjectId idProduct, @PathParam("idCart") ObjectId idCart ) {
         return Response.ok(iCartService.addItemToCart(idProduct,idCart)).build();
+    }
+
+    public Response fallBackAddMethod(ObjectId idProduct, ObjectId idCart) {
+        return Response.ok("Service product not found " +idProduct).build();
     }
 
     @PUT

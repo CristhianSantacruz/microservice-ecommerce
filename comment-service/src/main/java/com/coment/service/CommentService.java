@@ -32,11 +32,11 @@ public class CommentService  implements ICommentService {
         return CommentEntity.listAll();
     }
 
-
     @Override
-    public List<CommentEntity> getAllCommentsByVote() {
-        return CommentEntity.listAll(Sort.by("vote").descending());
+    public List<CommentEntity> getAllCommentsByUser(String emailUser) {
+        return CommentEntity.list("emailUser", emailUser);
     }
+
 
     @Override
     public List<CommentEntity> getAllCommentByIdProduct(String idProduct) {
