@@ -1,10 +1,14 @@
 package com.coment.service;
 
+import com.coment.client.UserClient;
+import com.coment.dto.CommentDto;
+import com.coment.dto.UserDto;
 import com.coment.model.CommentEntity;
 import com.coment.utils.CommentType;
-import io.quarkus.panache.common.Sort;
 import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
 import org.bson.types.ObjectId;
+import org.eclipse.microprofile.rest.client.inject.RestClient;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,19 +17,28 @@ import java.util.Optional;
 @ApplicationScoped
 public class CommentService  implements ICommentService {
 
+    @Inject
+    @RestClient
+    UserClient userClient;
+
 
     @Override
-    public CommentEntity saveComment(CommentEntity comment) {
-        int calificationComment = comment.getCalification();
-        if(comment.getContent().contains("?")) comment.setCommentType(CommentType.QUESTION);
-        if(calificationComment>=3){
-            comment.setCommentType(CommentType.POSITIVE);
+    public CommentEntity saveComment(CommentDto comment) {
+        CommentEntity commentEntity = new CommentEntity();
+        commentEntity.setIdProduct(comment.idProduct());
+        commentEntity.setContent(comment.content());
+        commentEntity.setCalification(comment.calification());
+        UserDto userByEmail = userClient.getUserByEmail(comment.email());
+        commentEntity.setOwner(userByEmail);
+        if(commentEntity.getContent().contains("?")) commentEntity.setCommentType(CommentType.QUESTION);
+        if(commentEntity.getCalification()>=3){
+            commentEntity.setCommentType(CommentType.POSITIVE);
         }else {
-            comment.setCommentType(CommentType.NEGATIVE);
+            commentEntity.setCommentType(CommentType.NEGATIVE);
         }
-        comment.setCreatedAt(LocalDateTime.now());
-        comment.persist();
-        return comment;
+        commentEntity.setCreatedAt(LocalDateTime.now());
+        commentEntity.persist();
+        return commentEntity;
     }
     @Override
     public List<CommentEntity> getAllComments() {

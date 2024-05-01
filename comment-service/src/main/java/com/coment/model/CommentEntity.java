@@ -1,5 +1,6 @@
 package com.coment.model;
 
+import com.coment.dto.UserDto;
 import com.coment.utils.CommentType;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.mongodb.panache.common.MongoEntity;
@@ -17,22 +18,24 @@ public class CommentEntity extends PanacheMongoEntity {
     @NotNull @NotBlank
     private String content;
     private int calification;
-    private String emailUser;
     private int vote;
     private CommentType commentType;
     private LocalDateTime createdAt;
+    private UserDto owner;
+
+
+    public UserDto getOwner() {
+        return owner;
+    }
+
+    public void setOwner(UserDto owner) {
+        this.owner = owner;
+    }
 
     public String getIdProduct() {
         return idProduct;
     }
 
-    public String getNameUser() {
-        return emailUser;
-    }
-
-    public void setNameUser(String nameUser) {
-        this.emailUser = nameUser;
-    }
 
     public void setIdProduct(String idProduct) {
         this.idProduct = idProduct;

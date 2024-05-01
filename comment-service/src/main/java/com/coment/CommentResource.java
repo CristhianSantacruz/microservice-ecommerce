@@ -1,5 +1,6 @@
 package com.coment;
 
+import com.coment.dto.CommentDto;
 import com.coment.model.CommentEntity;
 import com.coment.service.ICommentService;
 import jakarta.annotation.security.PermitAll;
@@ -32,9 +33,9 @@ public class CommentResource {
     @RolesAllowed({"user","admin"})
     @POST
     @Path("/save")
-    public Response saveComment(CommentEntity comment) {
-        iCommentService.saveComment(comment);
-        return Response.status(201).entity(comment).build();
+    public Response saveComment(CommentDto comment) {
+
+        return Response.status(201).entity(iCommentService.saveComment(comment)).build();
     }
 
     @PermitAll
