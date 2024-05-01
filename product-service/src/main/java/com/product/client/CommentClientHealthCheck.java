@@ -13,6 +13,8 @@ public class CommentClientHealthCheck implements HealthCheck {
     @Inject
     @RestClient
     CommentClient commentClient;
+
+
     @Override
     public HealthCheckResponse call() {
         commentClient.getAllCommentsByIdProduct(new ObjectId("662c6751f646327f332839a3"));

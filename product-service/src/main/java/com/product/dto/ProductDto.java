@@ -7,14 +7,13 @@ import java.math.BigDecimal;
 
 public class ProductDto {
 
-    @NotNull
-    @NotBlank
+    @NotNull @NotBlank(message = "El nombre del producto no debe estas vacio")
     private String nameProduct;
-    @NotNull @NotBlank
+    @NotNull @NotBlank(message = "La descripcion esta vacia")
     private String description;
     @NotNull
     private BigDecimal price;
-    @NotNull @NotBlank
+    @NotNull @NotBlank(message = "La categoria esta vacia")
     private String category;
 
     public String getNameProduct() {
