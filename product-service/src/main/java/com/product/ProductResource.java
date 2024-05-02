@@ -4,6 +4,11 @@ import com.product.client.CommentClient;
 import com.product.dto.ProductDto;
 import com.product.model.ProductEntity;
 import com.product.service.IProductService;
+import io.micrometer.core.annotation.Counted;
+import io.micrometer.core.annotation.Timed;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 import io.vertx.ext.web.handler.HttpException;
 import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
@@ -12,6 +17,7 @@ import jakarta.inject.Singleton;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import jakarta.ws.rs.*;
+import jakarta.ws.rs.core.Link;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import org.bson.types.ObjectId;
@@ -21,6 +27,8 @@ import org.eclipse.microprofile.faulttolerance.Timeout;
 import org.eclipse.microprofile.faulttolerance.exceptions.TimeoutException;
 import org.eclipse.microprofile.rest.client.inject.RestClient;
 
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.logging.Logger;
 
@@ -37,6 +45,17 @@ public class ProductResource {
     @Inject
     @RestClient
     CommentClient commentClient;
+
+    private final MeterRegistry meterRegistry;
+
+
+    private final LinkedHashSet<String> listNameSearch = new LinkedHashSet<>();
+
+
+    ProductResource(MeterRegistry meterRegistry) {
+        this.meterRegistry = meterRegistry;
+        meterRegistry.gaugeCollectionSize("list.size.name", Tags.of("gaugeSearch","gaugeNameSearch"), listNameSearch);
+    }
 
     @GET
     @PermitAll
@@ -70,10 +89,10 @@ public class ProductResource {
 
     @GET
     @PermitAll
+    @Timed(value = "call.all.product",extraTags = {"all","products"})
     @Path("/all")
     @Timeout(value = 3000L)
-    @Retry(maxRetries = 2)
-    @Fallback(fallbackMethod = "getAllFallBack")
+    @Fallback(fallbackMethod = "getAllFallBack",applyOn = TimeoutException.class)
     public Response getAllProducts(){
         this.LOGGER.info("ENDPOINT ALL PRODUCTS");
         return Response.ok(iProductService.getAllProducts()).build();
@@ -150,6 +169,7 @@ public class ProductResource {
 
     @PermitAll
     @GET
+    @Timed(value = "call.product.id",extraTags = {"product","productId"})
     @Path("/id/{id}")
     public  Response getProductById(@PathParam("id")ObjectId id){
         LOGGER.info("GET PRODUCT BY ID");
@@ -168,11 +188,14 @@ public class ProductResource {
 
     @PermitAll
     @GET
+    @Counted(value = "count.search",extraTags = {"search","search.product"})
     @Path("/search/")
     public Response searchByName(@QueryParam("name") String name){
         LOGGER.info("SEARCH PRODUCT BY NAME");
+        this.listNameSearch.add(name);
         return Response.ok(iProductService.getProductsBySearchName(name)).build();
     }
+
     @RolesAllowed("admin")
     @PUT
     @Path("update/{id}")
